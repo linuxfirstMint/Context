@@ -35,18 +35,21 @@ def tmp_app_data_dir(tmp_path):  # Use pytest's tmp_path fixture
 client = TestClient(app)
 
 
+@pytest.mark.success
 def test_read_root():
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"Hello": "World"}
 
 
+@pytest.mark.success
 def test_list_files_empty(tmp_app_data_dir):
     response = client.get("/list_files")
     assert response.status_code == 200
     assert response.json() == {"files": []}
 
 
+@pytest.mark.success
 def test_write_and_read_file_success(tmp_app_data_dir):
     file_path = "test_dir/test_file.txt"
     file_content = "Hello, FastAPI!"
@@ -60,6 +63,7 @@ def test_write_and_read_file_success(tmp_app_data_dir):
     assert response.json() == {"content": file_content}
 
 
+@pytest.mark.success
 def test_list_files_with_content(tmp_app_data_dir):
     (tmp_app_data_dir / "file1.txt").write_text("content1")
     (tmp_app_data_dir / "subdir").mkdir(
@@ -79,6 +83,7 @@ def test_list_files_with_content(tmp_app_data_dir):
     assert len(files) == 3
 
 
+@pytest.mark.success
 def test_list_files_filter_extensions(tmp_app_data_dir):
     (tmp_app_data_dir / "file1.txt").write_text("content1")
     (tmp_app_data_dir / "file2.log").write_text("content2")
@@ -93,6 +98,7 @@ def test_list_files_filter_extensions(tmp_app_data_dir):
     assert len(files) == 2
 
 
+@pytest.mark.edge_case
 def test_list_files_max_items(tmp_app_data_dir):
     for i in range(5):
         (tmp_app_data_dir / f"file{i}.txt").write_text(f"content{i}")
@@ -103,11 +109,13 @@ def test_list_files_max_items(tmp_app_data_dir):
     assert len(files) == 2
 
 
+@pytest.mark.error
 def test_read_file_not_found(tmp_app_data_dir):
     response = client.get("/read_file?file_path=non_existent.txt")
     assert response.status_code == 404
 
 
+@pytest.mark.error
 def test_read_file_path_traversal(tmp_app_data_dir):
     # Create a dummy file outside the allowed BASE_DIR to simulate traversal target
     (Path(__file__).parent / "outside.txt").write_text("secret")
@@ -117,6 +125,7 @@ def test_read_file_path_traversal(tmp_app_data_dir):
     (Path(__file__).parent / "outside.txt").unlink()  # Clean up
 
 
+@pytest.mark.error
 def test_read_file_invalid_extension(tmp_app_data_dir):
     (tmp_app_data_dir / "image.jpg").write_bytes(b"dummy_image_data")
     response = client.get("/read_file?file_path=image.jpg")
@@ -124,6 +133,7 @@ def test_read_file_invalid_extension(tmp_app_data_dir):
     assert "Extension .jpg not allowed" in response.json()["detail"]
 
 
+@pytest.mark.error
 def test_write_file_path_traversal(tmp_app_data_dir):
     response = client.post(
         "/write_file?file_path=../evil.txt", json={"content": "malicious"}
@@ -132,6 +142,7 @@ def test_write_file_path_traversal(tmp_app_data_dir):
     assert "Path traversal detected" in response.json()["detail"]
 
 
+@pytest.mark.error
 def test_write_file_invalid_extension(tmp_app_data_dir):
     response = client.post(
         "/write_file?file_path=document.pdf", json={"content": "pdf content"}
@@ -140,6 +151,7 @@ def test_write_file_invalid_extension(tmp_app_data_dir):
     assert "Extension .pdf not allowed" in response.json()["detail"]
 
 
+@pytest.mark.error
 def test_write_file_payload_too_large(tmp_app_data_dir):
     large_content = "A" * (MAX_FILE_SIZE_BYTES + 1)  # Exceeds limit
     response = client.post(
@@ -149,6 +161,7 @@ def test_write_file_payload_too_large(tmp_app_data_dir):
     assert "File size exceeds" in response.json()["detail"]
 
 
+@pytest.mark.error
 def test_read_file_not_utf8(tmp_app_data_dir):
     # Create a file with non-UTF-8 content
     non_utf8_path = tmp_app_data_dir / "non_utf8.txt"
@@ -160,6 +173,7 @@ def test_read_file_not_utf8(tmp_app_data_dir):
     assert "File is not UTF-8 encoded" in response.json()["detail"]
 
 
+@pytest.mark.success
 def test_trace_id_propagation(tmp_app_data_dir):
     trace_id_value = "12345-abcde"
     file_path = "trace_test.txt"

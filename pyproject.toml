@@ -22,6 +22,11 @@ testpaths = [
   "tests", # テストファイルが置かれているディレクトリ
 ]
 pythonpath = "."
+markers = [
+  "success: marks tests that verify expected behavior under normal conditions",
+  "error: marks tests that verify proper error handling and exception cases",
+  "edge_case: marks tests that verify behavior in edge or boundary conditions",
+]
 
 [project]
 name = "python_template"
