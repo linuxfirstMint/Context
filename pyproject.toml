@@ -22,6 +22,11 @@ testpaths = [
   "tests", # テストファイルが置かれているディレクトリ
 ]
 pythonpath = "."
+markers = [
+    "success: marks tests as success cases",
+    "error: marks tests as error cases",
+    "edge_case: marks tests as edge cases",
+]
 
 [project]
 name = "python_template"

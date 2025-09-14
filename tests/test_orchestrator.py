@@ -8,6 +8,7 @@ import src.orchestrator as orchestrator_module  # Import the module itself
 
 
 # --- Tests for extract_json_from_hermes_output ---
+@pytest.mark.success
 def test_extract_json_from_hermes_output_with_fences():
     hermes_output = """
     Some text before.
@@ -20,18 +21,21 @@ def test_extract_json_from_hermes_output_with_fences():
     assert result == {"thought": "hello", "tool_calls": []}
 
 
+@pytest.mark.success
 def test_extract_json_from_hermes_output_without_fences():
     hermes_output = '{"thought": "hello", "tool_calls": []}'
     result = orchestrator_module.extract_json_from_hermes_output(hermes_output)
     assert result == {"thought": "hello", "tool_calls": []}
 
 
+@pytest.mark.error
 def test_extract_json_from_hermes_output_invalid_json():
     hermes_output = "this is not json"
     with pytest.raises(orchestrator_module.JsonExtractionError):
         orchestrator_module.extract_json_from_hermes_output(hermes_output)
 
 
+@pytest.mark.error
 def test_extract_json_from_hermes_output_malformed_json_in_fences():
     hermes_output = """
     ```json
@@ -42,6 +46,7 @@ def test_extract_json_from_hermes_output_malformed_json_in_fences():
         orchestrator_module.extract_json_from_hermes_output(hermes_output)
 
 
+@pytest.mark.edge_case
 def test_extract_json_from_hermes_output_empty_fenced_json():
     hermes_output = """
     ```json
@@ -77,6 +82,7 @@ def mock_httpx_client():
 
 
 # --- Tests for execute_tool_call ---
+@pytest.mark.success
 @pytest.mark.asyncio
 async def test_execute_tool_call_list_files_success(mock_httpx_client):
     mock_httpx_client.get.return_value.status_code = 200
@@ -93,6 +99,7 @@ async def test_execute_tool_call_list_files_success(mock_httpx_client):
     assert result == {"files": ["a.txt"]}
 
 
+@pytest.mark.success
 @pytest.mark.asyncio
 async def test_execute_tool_call_read_file_success(mock_httpx_client):
     mock_httpx_client.get.return_value.status_code = 200
@@ -111,6 +118,7 @@ async def test_execute_tool_call_read_file_success(mock_httpx_client):
     assert result == {"content": "file content"}
 
 
+@pytest.mark.success
 @pytest.mark.asyncio
 async def test_execute_tool_call_write_file_success(mock_httpx_client):
     mock_httpx_client.post.return_value.status_code = 200
@@ -132,6 +140,7 @@ async def test_execute_tool_call_write_file_success(mock_httpx_client):
     assert result == {}  # Corrected assertion
 
 
+@pytest.mark.error
 @pytest.mark.asyncio
 async def test_execute_tool_call_write_file_missing_args(mock_httpx_client):
     tool_call = {
@@ -143,6 +152,7 @@ async def test_execute_tool_call_write_file_missing_args(mock_httpx_client):
         await orchestrator_module.execute_tool_call(tool_call, trace_id)
 
 
+@pytest.mark.error
 @pytest.mark.asyncio
 async def test_execute_tool_call_unsupported_tool(mock_httpx_client):
     tool_call = {"tool_name": "unsupported_tool", "args": {}}
@@ -153,6 +163,7 @@ async def test_execute_tool_call_unsupported_tool(mock_httpx_client):
         await orchestrator_module.execute_tool_call(tool_call, trace_id)
 
 
+@pytest.mark.error
 @pytest.mark.asyncio
 async def test_execute_tool_call_mcp_http_error(mock_httpx_client):
     mock_response = AsyncMock(spec=httpx.Response)  # spec を追加
@@ -172,6 +183,7 @@ async def test_execute_tool_call_mcp_http_error(mock_httpx_client):
         await orchestrator_module.execute_tool_call(tool_call, trace_id)
 
 
+@pytest.mark.error
 @pytest.mark.asyncio
 async def test_execute_tool_call_mcp_connection_error(mock_httpx_client):
     # No need to mock raise_for_status here, as RequestError is caught earlier
@@ -189,6 +201,7 @@ async def test_execute_tool_call_mcp_connection_error(mock_httpx_client):
 
 
 # --- Tests for orchestrate ---
+@pytest.mark.success
 @pytest.mark.asyncio
 async def test_orchestrate_success(mock_httpx_client):
     mock_httpx_client.post.return_value.status_code = 200
@@ -218,6 +231,7 @@ async def test_orchestrate_success(mock_httpx_client):
     assert mock_httpx_client.get.call_count == 1
 
 
+@pytest.mark.error
 @pytest.mark.asyncio
 async def test_orchestrate_json_extraction_error():
     hermes_output = "invalid json"
@@ -225,6 +239,7 @@ async def test_orchestrate_json_extraction_error():
     assert exit_code == 3
 
 
+@pytest.mark.error
 @pytest.mark.asyncio
 async def test_orchestrate_policy_error(mock_httpx_client):
     hermes_output = """
@@ -242,6 +257,7 @@ async def test_orchestrate_policy_error(mock_httpx_client):
     assert exit_code == 2
 
 
+@pytest.mark.error
 @pytest.mark.asyncio
 async def test_orchestrate_execution_error(mock_httpx_client):
     mock_response = AsyncMock()
