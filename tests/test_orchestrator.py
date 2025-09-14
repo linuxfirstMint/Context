@@ -46,7 +46,7 @@ def test_extract_json_from_hermes_output_malformed_json_in_fences():
         orchestrator_module.extract_json_from_hermes_output(hermes_output)
 
 
-@pytest.mark.edge_case
+@pytest.mark.error
 def test_extract_json_from_hermes_output_empty_fenced_json():
     hermes_output = """
     ```json

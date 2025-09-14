@@ -23,9 +23,9 @@ testpaths = [
 ]
 pythonpath = "."
 markers = [
-    "success: marks tests as success cases",
-    "error: marks tests as error cases",
-    "edge_case: marks tests as edge cases",
+  "success: marks tests that verify expected behavior under normal conditions",
+  "error: marks tests that verify proper error handling and exception cases",
+  "edge_case: marks tests that verify behavior in edge or boundary conditions",
 ]
 
 [project]

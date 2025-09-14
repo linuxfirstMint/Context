@@ -42,7 +42,7 @@ def test_read_root():
     assert response.json() == {"Hello": "World"}
 
 
-@pytest.mark.edge_case
+@pytest.mark.success
 def test_list_files_empty(tmp_app_data_dir):
     response = client.get("/list_files")
     assert response.status_code == 200
