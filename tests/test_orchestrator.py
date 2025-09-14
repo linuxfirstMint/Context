@@ -284,3 +284,40 @@ async def test_orchestrate_execution_error(mock_httpx_client):
     """
     exit_code = await orchestrator_module.orchestrate(hermes_output)
     assert exit_code == 1
+
+
+@pytest.mark.edge_case
+@pytest.mark.asyncio
+async def test_orchestrate_empty_tool_calls(mock_httpx_client):
+    hermes_output = """
+    ```json
+    {
+      "thought": "No tools to execute.",
+      "tool_calls": []
+    }
+    ```
+    """
+    exit_code = await orchestrator_module.orchestrate(hermes_output)
+    assert exit_code == 0
+    mock_httpx_client.post.assert_not_called()
+    mock_httpx_client.get.assert_not_called()
+
+
+@pytest.mark.error
+@pytest.mark.asyncio
+async def test_orchestrate_tool_call_missing_args(mock_httpx_client):
+    hermes_output = """
+    ```json
+    {
+      "thought": "Executing tool with missing args.",
+      "tool_calls": [
+        {"tool_name": "write_file", "args": {"file_path": "test.txt"}}
+      ]
+    }
+    ```
+    """
+    exit_code = await orchestrator_module.orchestrate(hermes_output)
+    assert (
+        exit_code == 1
+    )  # ExecutionError: missing 'content' in write_file argsrguments for the tool cause an ExecutionError
+    assert exit_code == 1

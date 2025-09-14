@@ -119,7 +119,10 @@ async def read_file(
 
 @app.post("/write_file")
 async def write_file(
-    file_path: str, file_content: FileContent, trace_id: str = Depends(get_trace_id)
+    file_path: str,
+    file_content: FileContent,
+    mode: str = "overwrite",  # Default to overwrite
+    trace_id: str = Depends(get_trace_id),
 ) -> Response:
     """
     Writes content to a specified file.
@@ -134,10 +137,19 @@ async def write_file(
             detail=f"File size exceeds {MAX_FILE_SIZE_BYTES / 1024}KB limit",
         )
 
+    open_mode = "w"
+    if mode == "append":
+        open_mode = "a"
+    elif mode != "overwrite":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid mode. Allowed modes are 'overwrite' and 'append'.",
+        )
+
     try:
         # Ensure parent directories exist
         abs_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(abs_path, "w", encoding="utf-8") as f:
+        with open(abs_path, open_mode, encoding="utf-8") as f:
             f.write(file_content.content)
         return Response(
             status_code=status.HTTP_200_OK, content="File written successfully"

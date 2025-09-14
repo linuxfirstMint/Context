@@ -198,3 +198,57 @@ def test_trace_id_propagation(tmp_app_data_dir):
     response = client.get("/list_files", headers={"X-Trace-ID": trace_id_value})
     assert response.status_code == 200
     assert "trace_test.txt" in response.json()["files"]
+
+
+@pytest.mark.success
+def test_write_file_append_mode(tmp_app_data_dir):
+    file_path = "append_test.txt"
+    initial_content = "Initial content."
+    appended_content = " Appended content."
+
+    # Create the file with initial content
+    response = client.post(
+        f"/write_file?file_path={file_path}", json={"content": initial_content}
+    )
+    assert response.status_code == 200
+
+    # Append content to the file
+    response = client.post(
+        f"/write_file?file_path={file_path}&mode=append",
+        json={"content": appended_content},
+    )
+    assert response.status_code == 200
+
+    # Read the file and verify the content
+    response = client.get(f"/read_file?file_path={file_path}")
+    assert response.status_code == 200
+    assert response.json()["content"] == initial_content + appended_content
+
+
+@pytest.mark.success
+def test_write_file_creates_directories(tmp_app_data_dir):
+    file_path = "new_dir/sub_dir/file.txt"
+    file_content = "Content in a nested directory."
+    response = client.post(
+        f"/write_file?file_path={file_path}", json={"content": file_content}
+    )
+    assert response.status_code == 200
+
+    # Verify that the file was created
+    response = client.get(f"/read_file?file_path={file_path}")
+    assert response.status_code == 200
+    assert response.json()["content"] == file_content
+
+
+@pytest.mark.edge_case
+def test_list_files_empty_extensions(tmp_app_data_dir):
+    (tmp_app_data_dir / "file1.txt").write_text("content1")
+    (tmp_app_data_dir / "file2.log").write_text("content2")
+
+    response = client.get("/list_files?extensions=")
+    assert response.status_code == 200
+    # Assuming it should return all files if extensions is empty.
+    files = response.json()["files"]
+    assert "file1.txt" in files
+    assert "file2.log" in files
+    assert len(files) == 2
