@@ -1,0 +1,91 @@
+openapi: 3.1.0
+info:
+  title: EverContext RAG Server
+  version: 1.0.0
+servers:
+  - url: http://localhost:8010
+paths:
+  /ingest:
+    post:
+      summary: Upsert embeddings for paths or diff
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [paths]
+                  properties:
+                    paths:
+                      type: array
+                      items: { type: string }
+                - type: object
+                  required: [diff]
+                  properties:
+                    diff:
+                      type: object
+                      properties:
+                        added:    { type: array, items: { type: string } }
+                        modified: { type: array, items: { type: string } }
+                        deleted:  { type: array, items: { type: string } }
+                        renamed:
+                          type: array
+                          items:
+                            type: object
+                            required: [from, to]
+                            properties:
+                              from: { type: string }
+                              to:   { type: string }
+      responses:
+        "200": { description: OK }
+  /prune:
+    post:
+      summary: Remove embeddings for paths
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [paths]
+              properties:
+                paths:
+                  type: array
+                  items: { type: string }
+      responses:
+        "200": { description: OK }
+  /search:
+    post:
+      summary: Semantic code search
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query: { type: string }
+                top_k: { type: integer, default: 5, minimum: 1, maximum: 50 }
+                filters:
+                  type: object
+                  properties:
+                    path_prefix: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chunks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:  { type: string }
+                        span:  { type: string, pattern: "^L\\d+-L\\d+$" }
+                        text:  { type: string }
+                        score: { type: number }

@@ -1,0 +1,12 @@
+graph TD
+    ExecutionUnit(実行部隊: Hermes) --> MCPServer_Entry(MCP Server)
+
+    subgraph MCP Server
+        MCPServer_Entry --> APIEndpoints(1. API Endpoints)
+        APIEndpoints --> RequestValidator(2. リクエストバリデーター)
+        RequestValidator --> SecurityLayer(3. セキュリティレイヤー)
+        SecurityLayer --> FileSystemAccess(4. ファイルシステムアクセス層)
+        FileSystemAccess <--> Codebase(コードベース)
+        FileSystemAccess --> ErrorHandler(5. エラーハンドラー)
+        ErrorHandler --> ExecutionUnit
+    end

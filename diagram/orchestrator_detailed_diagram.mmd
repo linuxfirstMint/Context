@@ -1,0 +1,24 @@
+graph TD
+    User[ユーザー] -->|曖昧な指示| Orchestrator_Entry(Orchestrator)
+
+    subgraph Orchestrator
+        Orchestrator_Entry --> InstructionParser(指示解析)
+        InstructionParser --> PlanRequestHandler(計画要求)
+        PlanRequestHandler --> Commander(Gemini)
+        Commander --> PlanResponseHandler(計画応答)
+        PlanResponseHandler --> ExecutionRequestHandler(実行要求)
+        ExecutionRequestHandler --> ExecutionUnit(Hermes)
+
+        subgraph "Context Management (フェーズ3以降)"
+            PlanRequestHandler -- コンテキスト要求 --> ContextManager
+            ExecutionRequestHandler -- コンテキスト要求 --> ContextManager
+            ContextManager <--> RAGServer
+        end
+
+        InstructionParser -- 状態更新 --> StateManager
+        PlanResponseHandler -- 状態更新 --> StateManager
+        ExecutionRequestHandler -- 状態更新 --> StateManager
+        StateManager -- 状態参照 --> InstructionParser
+        StateManager -- 状態参照 --> PlanRequestHandler
+        StateManager -- 状態参照 --> ExecutionRequestHandler
+    end

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evercontext.dev/schema/tool-result-v1.json",
+  "title": "Tool Result v1",
+  "type": "object",
+  "required": ["tool", "args", "result"],
+  "properties": {
+    "tool": { "type": "string" },
+    "args": { "type": "object" },
+    "result": {
+      "type": "object",
+      "properties": {
+        "ok": { "type": "boolean" },
+        "data": { "type": "object" },
+        "error": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

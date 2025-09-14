@@ -1,0 +1,8 @@
+graph TD
+    Developer[開発者] --> GitCommit(Git Commit)
+    GitCommit --> PreCommitHook(Pre-commit Hook)
+    PreCommitHook --> DiffScanner(差分スキャナー)
+    DiffScanner --> VectorizationModule(RAG Server: ベクトル化モジュール)
+    VectorizationModule --> VectorDB(ベクトルDB)
+    VectorDB -- 最新コード参照 --> RAGServer(RAG Server)
+    PreCommitHook -- 完了/承認 --> GitCommit

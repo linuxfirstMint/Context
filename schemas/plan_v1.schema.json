@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evercontext.dev/schema/plan-v1.json",
+  "title": "Execution Plan v1",
+  "type": "object",
+  "required": ["meta", "tasks"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["version", "intent"],
+      "properties": {
+        "version": { "type": "string", "const": "1.0" },
+        "intent":  { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "tool", "args"],
+        "properties": {
+          "id":    { "type": "string" },
+          "title": { "type": "string" },
+          "tool":  { "type": "string" },
+          "args":  { "type": "object" },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true
+          },
+          "expectations": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "on_error": {
+      "type": "object",
+      "properties": {
+        "policy": { "type": "string", "enum": ["halt", "continue", "rollback"] },
+        "hint":   { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

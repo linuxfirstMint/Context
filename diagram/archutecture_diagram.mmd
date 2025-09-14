@@ -1,0 +1,18 @@
+graph TD
+    User[ユーザー] -->|曖昧な指示| Orchestrator[Orchestrator]
+
+    subgraph AI Orchestration
+        Orchestrator -- 計画要求 --> Commander(Gemini)
+        Commander -- 実行可能な計画 --> Orchestrator
+        Orchestrator -- 実行指示 --> ExecutionUnit(Hermes)
+    end
+
+    ExecutionUnit(Hermes) -- ファイル操作要求 --> MCPServer
+    MCPServer <--> Codebase
+
+    subgraph "RAG System (フェーズ3以降)"
+        GitingestWorkflow(Gitingest Diff Sync Workflow) --> VectorDB
+        VectorDB <--> RAGServer
+        RAGServer -- コンテキスト提供 --> Orchestrator
+        Orchestrator -- コンテキスト要求 --> RAGServer
+    end

@@ -1,0 +1,110 @@
+openapi: 3.1.0
+info:
+  title: EverContext MCP Server
+  version: 1.0.0
+servers:
+  - url: http://localhost:8001
+paths:
+  /list_files:
+    post:
+      summary: List directory
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: false
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [path]
+              properties:
+                path: { type: string, description: "Relative to APP_ROOT" }
+                extensions:
+                  type: array
+                  items: { type: string }
+                max_items: { type: integer, minimum: 1, maximum: 2000, default: 200 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  files:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name: { type: string }
+                        is_dir: { type: boolean }
+                        size: { type: integer, nullable: true }
+        "400": { description: path escapes root }
+        "404": { description: directory not found }
+  /read_file:
+    post:
+      summary: Read a UTF-8 text file
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: false
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [path]
+              properties:
+                path: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content: { type: string }
+        "404": { description: file not found }
+        "413": { description: file too large }
+        "415": { description: not a utf-8 text file }
+  /write_file:
+    post:
+      summary: Write a UTF-8 text file
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: false
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [path, content]
+              properties:
+                path: { type: string }
+                content: { type: string }
+                mode:
+                  type: string
+                  enum: [create, overwrite, append]
+                  default: overwrite
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, enum: [ok] }
+                  path: { type: string }
+        "400": { description: extension not allowed }
+        "409": { description: file already exists (create) }
+        "413": { description: content too large }

@@ -1,0 +1,14 @@
+graph TD
+    Orchestrator(Orchestrator) --> RAGServer_Entry(RAG Server)
+    Gitingest(Gitingest Diff Sync Workflow) --> VectorizationModule(ベクトル化モジュール)
+
+    subgraph RAG Server
+        RAGServer_Entry --> APIEndpoints(API Endpoints)
+        APIEndpoints --> SearchRetrievalModule(検索/取得モジュール)
+        SearchRetrievalModule --> VectorDB(ベクトルDB)
+        VectorDB --> SearchRetrievalModule
+        SearchRetrievalModule --> ContextFormatter(コンテキストフォーマッター)
+        ContextFormatter --> Orchestrator
+
+        VectorizationModule --> VectorDB
+    end

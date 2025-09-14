@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evercontext.dev/schema/hermes-response-v1.json",
+  "title": "Hermes Response v1",
+  "type": "object",
+  "properties": {
+    "thought": { "type": "string" },
+    "tool_calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "parameters"],
+        "properties": {
+          "name": { "type": "string" },
+          "parameters": { "type": "object" }
+        }
+      }
+    },
+    "final_answer": { "type": "string" }
+  },
+  "additionalProperties": false
+}
