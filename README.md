@@ -49,6 +49,23 @@ cd ever_context
 # 例: python main.py
 ```
 
+### Orchestrator CLI
+
+Hermes の出力（JSON）を元にツール呼び出しをオーケストレーションします。
+
+```bash
+task run-orchestrator --hermes-output '```json
+{
+  "thought": "テストファイルを作成し、その内容を読み込みます。",
+  "tool_calls": [
+    {"tool_name": "write_file", "args": {"file_path": "test.txt", "content": "Hello from Orchestrator!"}},
+    {"tool_name": "read_file", "args": {"file_path": "test.txt"}}
+  ],
+  "final_answer": "ツール呼び出しが正常に実行されました。"
+}
+```'
+```
+
 ## API リファレンス
 
 本プロジェクトの API に関する詳細は、以下の OpenAPI ドキュメントを参照してください。
