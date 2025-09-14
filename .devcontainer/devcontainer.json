@@ -1,0 +1,33 @@
+{
+  "name": "Python Template",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-vscode.makefile-tools",
+        "charliermarsh.ruff",
+        "esbenp.prettier-vscode",
+        "tamasfe.even-better-toml",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": false,
+        "python.linting.mypyEnabled": true,
+        "python.testing.pytestArgs": [
+          "src"
+        ],
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestEnabled": true
+      }
+    }
+  },
+  "postCreateCommand": "task install"
+}

@@ -1,0 +1,6 @@
+site_name: python_template
+repo_url: https://github.com/your-username/gemini-cli-sample
+theme:
+  name: material
+nav:
+  - Home: index.md

@@ -1,0 +1,56 @@
+# Ruff (Linter & Formatter) の設定
+[tool.ruff]
+line-length = 88                          # 1行の最大文字数
+select = ["E", "F", "W", "I", "UP", "C4"] # 有効にするLintルール
+ignore = ["E501"]                         # 無視するLintルール（行長超過はフォーマッターに任せるため）
+
+[tool.ruff.format]
+quote-style = "double" # フォーマッターはダブルクォートを使用
+
+# Mypy (Static Type Checker) の設定
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+exclude = [".venv"]        # .venvディレクトリはチェック対象外
+
+# Pytest (Testing Framework) の設定
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q" # テスト実行時のオプション
+testpaths = [
+  "tests", # テストファイルが置かれているディレクトリ
+]
+pythonpath = "."
+
+[project]
+name = "python_template"
+version = "0.1.0"
+description = "A modern Python project template."
+authors = [{ name = "Your Name", email = "your.email@example.com" }]
+requires-python = ">=3.11"
+license = { text = "MIT" }
+keywords = ["python", "template"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = ["fastapi>=0.116.1", "uvicorn>=0.35.0"]
+
+[project.urls]
+"Homepage" = "https://github.com/your-username/gemini-cli-sample"
+"Bug Tracker" = "https://github.com/your-username/gemini-cli-sample/issues"
+
+[dependency-groups]
+dev = [
+  "httpie>=3.2.4",
+  "httpx>=0.28.1",
+  "mkdocs>=1.6.1",
+  "mkdocs-material>=9.6.19",
+  "mypy>=1.18.1",
+  "pre-commit>=4.3.0",
+  "pytest>=8.4.2",
+  "pytest-watcher>=0.4.3",
+  "ruff>=0.13.0",
+]

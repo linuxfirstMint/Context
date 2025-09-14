@@ -1,0 +1,56 @@
+version: "3"
+
+tasks:
+  install:
+    desc: "Install dependencies"
+    cmds:
+      - uv sync
+      - uv run pre-commit install
+
+  run:
+    desc: "Run the application"
+    cmds:
+      - uv run uvicorn src.main:app --reload
+
+  test:
+    desc: "Run tests"
+    cmds:
+      - uv run pytest
+
+  test-watch:
+    desc: "Run tests in watch mode"
+    cmds:
+      - uv run ptw
+
+  lint:
+    desc: "Lint the code"
+    cmds:
+      - uv run ruff check .
+      - uv run mypy src
+
+  format:
+    desc: "Format the code"
+    cmds:
+      - uv run ruff format .
+
+  docs-serve:
+    desc: "Serve the documentation site for live preview"
+    cmds:
+      - uv run mkdocs serve
+
+  docs-build:
+    desc: "Build the documentation site"
+    cmds:
+      - uv run mkdocs build
+
+  _check-server-running:
+    desc: "Internal: Checks if the FastAPI server is running"
+    cmds:
+      - ./scripts/check_server.sh
+    silent: true
+
+  api-test:
+    desc: "Send a sample GET request to the local API using HTTPie"
+    deps: [_check-server-running]
+    cmds:
+      - uv run http GET http://127.0.0.1:8000/
