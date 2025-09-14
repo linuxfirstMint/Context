@@ -55,7 +55,14 @@ tasks:
     cmds:
       - uv run http GET http://127.0.0.1:8000/
 
-  run-orchestrator:
+  run-orchestrator-string:
     desc: "Run the Orchestrator CLI with Hermes output"
     cmds:
-      - uv run python src/cli.py --hermes-output "{{.CLI_ARGS}}"
+      - uv run python src/cli.py --hermes-output {{.CLI_ARGS}}
+    aliases: [ros]
+
+  run-orchestrator-file:
+    desc: "Run the Orchestrator CLI with Hermes output"
+    cmds:
+      - uv run python src/cli.py --hermes-output-file "{{.CLI_ARGS}}"
+    aliases: [rof]

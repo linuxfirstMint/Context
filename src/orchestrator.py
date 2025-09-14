@@ -76,11 +76,14 @@ async def execute_tool_call(tool_call: dict[str, Any], trace_id: str) -> Any:
                     json={"content": content},
                     headers=headers,
                 )
+                # write_file は Response を返すため、json() を呼び出さない
+                return {}  # 空の辞書を返すか、None を返すか、適切な値を返す
             else:
                 raise PolicyError(f"Unsupported tool: {tool_name}")
 
-            await response.raise_for_status()
-            return await response.json()  # Await the json() method
+            response.raise_for_status()
+            json_response = json.loads(response.text)  # 手動でJSONを解析
+            return json_response
     except httpx.HTTPStatusError as e:
         raise ExecutionError(
             f"MCP returned error: {e.response.status_code} - {e.response.text}"

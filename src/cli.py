@@ -2,7 +2,7 @@ import argparse
 import asyncio
 import sys
 
-from .orchestrator import orchestrate
+from orchestrator import orchestrate
 
 
 async def main():
@@ -28,11 +28,6 @@ async def main():
         hermes_output_content = args.hermes_output
     else:
         parser.error("Either --hermes-output or --hermes-output-file must be provided.")
-
-    # The existing Path().is_file() check is no longer needed as we explicitly handle file input
-    # if Path(hermes_output_content).is_file():
-    #     with open(hermes_output_content, encoding="utf-8") as f:
-    #         hermes_output_content = f.read()
 
     exit_code = await orchestrate(hermes_output_content)
     sys.exit(exit_code)
