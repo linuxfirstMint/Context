@@ -54,3 +54,8 @@ tasks:
     deps: [_check-server-running]
     cmds:
       - uv run http GET http://127.0.0.1:8000/
+
+  run-orchestrator:
+    desc: "Run the Orchestrator CLI with Hermes output"
+    cmds:
+      - uv run python src/cli.py --hermes-output "{{.CLI_ARGS}}"
