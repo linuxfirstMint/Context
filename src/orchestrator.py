@@ -79,7 +79,7 @@ async def execute_tool_call(tool_call: dict[str, Any], trace_id: str) -> Any:
             else:
                 raise PolicyError(f"Unsupported tool: {tool_name}")
 
-            response.raise_for_status()
+            await response.raise_for_status()
             return await response.json()  # Await the json() method
     except httpx.HTTPStatusError as e:
         raise ExecutionError(
